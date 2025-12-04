@@ -1,0 +1,7 @@
+streamlit
+transformers
+torch==2.1.2+cpu
+torchvision==0.16.2+cpu
+Pillow
+numpy
+requests
