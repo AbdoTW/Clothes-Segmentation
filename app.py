@@ -4,7 +4,6 @@ from PIL import Image
 import torch.nn as nn
 import numpy as np
 import io
-import requests
 
 # Page configuration
 st.set_page_config(
@@ -57,16 +56,6 @@ def get_clothing_mask(image, processor, model):
     output_image[clothing_mask == 0] = [255, 255, 255]
     
     return pred_seg, output_image
-
-def load_image_from_url(url):
-    """Load image from URL"""
-    try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        image = Image.open(io.BytesIO(response.content)).convert('RGB')
-        return image, None
-    except Exception as e:
-        return None, f"Error loading image from URL: {str(e)}"
 
 # Custom CSS styling
 st.markdown(
@@ -159,10 +148,9 @@ with st.sidebar:
 
     with st.expander("How to Use"):
         st.markdown("""
-        1. Choose input method (Upload or URL)
-        2. Provide an image with a person
-        3. Click 'Segment Clothes'
-        4. View the original and segmented results side by side
+        1. Upload an image with a person
+        2. Click 'Segment Clothes'
+        3. View the original and segmented results side by side
         """)
 
     with st.expander("Detected Categories"):
@@ -171,6 +159,7 @@ with st.sidebar:
         - **Accessories**: Hat, Belt, Bag, Scarf
         - **Footwear**: Left-shoe, Right-shoe
         """)
+
 
     st.markdown("---")
 
@@ -186,38 +175,17 @@ except Exception as e:
     st.sidebar.error(f"⚠️ Could not load model from '{model_path}'")
 
 # Main content
-# Toggle between upload and URL
-input_method = st.radio(
-    "Choose input method:",
-    ["Upload Image", "Image URL"],
-    horizontal=True,
+# File uploader with custom styling
+uploaded_file = st.file_uploader(
+    "Choose an image to segment",
+    type=['png', 'jpg', 'jpeg'],
+    help="Upload an image of a person wearing clothes",
     label_visibility="collapsed"
 )
 
-image = None
-error_message = None
-
-if input_method == "Upload Image":
-    uploaded_file = st.file_uploader(
-        "Choose an image to segment",
-        type=['png', 'jpg', 'jpeg'],
-        help="Upload an image of a person wearing clothes",
-        label_visibility="collapsed"
-    )
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file).convert('RGB')
-else:
-    image_url = st.text_input(
-        "Enter image URL",
-        placeholder="https://example.com/image.jpg",
-        label_visibility="collapsed"
-    )
-    if image_url:
-        image, error_message = load_image_from_url(image_url)
-        if error_message:
-            st.error(error_message)
-
-if image is not None and model_loaded:
+if uploaded_file is not None and model_loaded:
+    image = Image.open(uploaded_file).convert('RGB')
+    
     # Create two columns for layout
     col_left, col_right = st.columns([1, 1])
     
@@ -249,6 +217,7 @@ if image is not None and model_loaded:
                         st.session_state.model
                     )
                     
+                    
                     # Display segmented clothes on the right
                     st.markdown(
                         """
@@ -259,6 +228,9 @@ if image is not None and model_loaded:
                         unsafe_allow_html=True,
                     )
                     st.image(clothing_only, use_container_width=True)
+                    
+                    # st.success("✅ Segmentation completed successfully!")
+                    # st.markdown("<br>", unsafe_allow_html=True)
                     
                     # Download button
                     st.markdown("<br>", unsafe_allow_html=True)
@@ -281,9 +253,7 @@ if image is not None and model_loaded:
                     st.error(f"❌ Error during segmentation: {str(e)}")
                     st.session_state.process_image = False
 
-elif image is None and model_loaded and not error_message:
-    st.info("👆 Please upload an image or enter an image URL to get started")
-elif not model_loaded:
+elif uploaded_file is not None and not model_loaded:
     st.warning("⚠️ Model not loaded. Please check the model path.")
 
 # Footer
