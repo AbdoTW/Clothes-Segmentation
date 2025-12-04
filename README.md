@@ -1,4 +1,14 @@
-# Clothes Segmentation System
+# Clothes Segmentation App
+
+<em>The **Clothes Segmentation System** is a **Streamlit-based web application** that extracts clothing items from images using AI.  
+It uses **SegFormer-B2 deep learning model** for semantic segmentation to identify and isolate clothing items from photographs.</em><br>
+
+[![View Live App](https://img.shields.io/badge/View_Live_App-Click_Here-blue?style=for-the-badge&logo=streamlit)](https://faisal-khann-movie-recommendation-system-app-zfwnir.streamlit.app/)
+
+
+
+
+
 ![](assets/demo2.png)
 
 ---

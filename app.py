@@ -151,6 +151,7 @@ with st.sidebar:
         1. Upload an image with a person
         2. Click 'Segment Clothes'
         3. View the original and segmented results side by side
+        4. Download the segmented image
         """)
 
     with st.expander("Detected Categories"):
@@ -159,7 +160,6 @@ with st.sidebar:
         - **Accessories**: Hat, Belt, Bag, Scarf
         - **Footwear**: Left-shoe, Right-shoe
         """)
-
 
     st.markdown("---")
 
@@ -175,7 +175,6 @@ except Exception as e:
     st.sidebar.error(f"⚠️ Could not load model from '{model_path}'")
 
 # Main content
-# File uploader with custom styling
 uploaded_file = st.file_uploader(
     "Choose an image to segment",
     type=['png', 'jpg', 'jpeg'],
@@ -183,9 +182,11 @@ uploaded_file = st.file_uploader(
     label_visibility="collapsed"
 )
 
-if uploaded_file is not None and model_loaded:
+image = None
+if uploaded_file is not None:
     image = Image.open(uploaded_file).convert('RGB')
-    
+
+if image is not None and model_loaded:
     # Create two columns for layout
     col_left, col_right = st.columns([1, 1])
     
@@ -199,11 +200,11 @@ if uploaded_file is not None and model_loaded:
             """,
             unsafe_allow_html=True,
         )
-        st.image(image, use_container_width=True)
+        st.image(image, width='stretch')
         
         # Segment button below the image
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button('🚀 Segment Clothes', use_container_width=True):
+        if st.button('🚀 Segment Clothes', width='stretch'):
             st.session_state.process_image = True
     
     with col_right:
@@ -217,7 +218,6 @@ if uploaded_file is not None and model_loaded:
                         st.session_state.model
                     )
                     
-                    
                     # Display segmented clothes on the right
                     st.markdown(
                         """
@@ -227,10 +227,7 @@ if uploaded_file is not None and model_loaded:
                         """,
                         unsafe_allow_html=True,
                     )
-                    st.image(clothing_only, use_container_width=True)
-                    
-                    # st.success("✅ Segmentation completed successfully!")
-                    # st.markdown("<br>", unsafe_allow_html=True)
+                    st.image(clothing_only, width='stretch')
                     
                     # Download button
                     st.markdown("<br>", unsafe_allow_html=True)
@@ -243,7 +240,7 @@ if uploaded_file is not None and model_loaded:
                         data=buf_clothes.getvalue(),
                         file_name="clothes_segmented.png",
                         mime="image/png",
-                        use_container_width=True
+                        width='stretch'
                     )
                     
                     # Reset the flag
@@ -253,7 +250,9 @@ if uploaded_file is not None and model_loaded:
                     st.error(f"❌ Error during segmentation: {str(e)}")
                     st.session_state.process_image = False
 
-elif uploaded_file is not None and not model_loaded:
+elif image is None and model_loaded:
+    st.info("👆 Please upload an image to get started")
+elif not model_loaded:
     st.warning("⚠️ Model not loaded. Please check the model path.")
 
 # Footer
