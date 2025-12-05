@@ -17,7 +17,7 @@ It uses **SegFormer-B2 deep learning model** for semantic segmentation to identi
 - [Loss Function Selection and Reason](#loss-function-selection-and-reason)
 - [Performance Analysis and Evaluation Metrics](#performance-analysis-and-evaluation-metrics)
 - [System Capabilities](#system-capabilities)
-- [Limitations of the System](#limitations-of-the-system)
+- [Set Up](#Set-Up)
 
 ---
 
@@ -409,9 +409,18 @@ Overall Accuracy = (Total Correct Pixels) / (Total Pixels)
 
 ---
 
-## Limitations of the System
+## Set Up
 
+You can run the training notebook directly on **Kaggle** without any modifications.  
+Just make sure to enable a **P100 GPU** in the Kaggle notebook before starting the training process.
 
+Steps:
+1. Create a new Kaggle Notebook.
+2. Go to **Settings → Accelerator → GPU (P100)**.
+3. Upload or copy the training code (clothes-segmentation-segformer-b2-training.ipynb).
+4. Run all cells — the environment is already compatible with the project.
+
+---
 ## Conclusion
 
 This clothes segmentation system demonstrates strong performance for fashion-focused applications, achieving 94.6% overall accuracy and 0.56 mIoU. The SegFormer transformer architecture excels at global context understanding and multi-class segmentation, significantly outperforming CNN-based alternatives tested (YOLOv12).
